@@ -9,6 +9,7 @@ import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLAutoDrawable;
 
+import com.jogamp.opengl.glu.GLU;
 import mintools.parameters.BooleanParameter;
 import mintools.parameters.DoubleParameter;
 import mintools.parameters.IntParameter;
@@ -36,7 +37,7 @@ public class DOFCamera {
 	DoubleParameter fovy = new DoubleParameter( "fov y degrees", 34, 5, 90 );
 	DoubleParameter sensorHeight = new DoubleParameter( "sensor height mm", 24, 10, 100 ); // limits?
 	DoubleParameter dolly = new DoubleParameter( "dolly m", 15, 0.5, 30 );
-	
+
 	/** Enables follow focus when you change the dolly parameter */
 	BooleanParameter dollyFocus = new BooleanParameter( "enable dolly focus", false );
 	
@@ -173,6 +174,19 @@ public class DOFCamera {
     	GL2 gl = drawable.getGL().getGL2();
     	
     	// TODO OBJECTIVE 1: Compute parameters to call glFrustum
+    	double znear = this.near.getValue();
+    	double zfar = this.far.getValue();
+    	double fov = this.fovy.getValue();
+    	double top = znear * Math.tan(0.5 * fov / 180 * Math.PI);
+    	double btm = -top;
+    	double height = drawable.getSurfaceHeight();
+    	double width = drawable.getSurfaceWidth();
+    	double aspect = width / height;
+    	double left = btm * aspect;
+    	double right = -left;
+
+    	gl.glFrustum(left, right, btm, top, znear, zfar);
+
     	// TODO OBJECTIVE 7: revisit this function for shifted perspective projection
     	
     }
@@ -186,8 +200,11 @@ public class DOFCamera {
      */
     public void setupViewingTransformation( GLAutoDrawable drawable, int i ) {
     	GL2 gl = drawable.getGL().getGL2();
+		GLU glu = new GLU();
 
     	// TODO OBJECTIVE 1: Set up the viewing transformation
+		
+
     	// TODO OBJECTIVE 7: revisit this function for shifted perspective projection, if necessary
 
     }
