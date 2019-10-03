@@ -103,34 +103,40 @@ public class CanvasCam2 implements GLEventListener {
 		
         // Get the V1 and P1 matrices of camera 1, the DOF camera
         gl.glPushMatrix();
-        gl.glLoadIdentity();
-        dofCam.setupProjection( drawable, 0 );
-        gl.glGetDoublev( GL2.GL_MODELVIEW_MATRIX, P.asArray(), 0 );
-		P.reconstitute();
-		Pinv.getBackingMatrix().invert( P.getBackingMatrix() );
-		gl.glLoadIdentity();
-        dofCam.setupViewingTransformation( drawable, 0 );
-        gl.glGetDoublev( GL2.GL_MODELVIEW_MATRIX, V.asArray(), 0 );
-		V.reconstitute();
-		Vinv.getBackingMatrix().invert( V.getBackingMatrix() );
+        {
+            gl.glLoadIdentity();
+            dofCam.setupProjection(drawable, 0);
+            gl.glGetDoublev(GL2.GL_MODELVIEW_MATRIX, P.asArray(), 0);
+            P.reconstitute();
+            Pinv.getBackingMatrix().invert(P.getBackingMatrix());
+
+            gl.glLoadIdentity();
+            dofCam.setupViewingTransformation(drawable, 0);
+            gl.glGetDoublev(GL2.GL_MODELVIEW_MATRIX, V.asArray(), 0);
+            V.reconstitute();
+            Vinv.getBackingMatrix().invert(V.getBackingMatrix());
+        }
 		gl.glPopMatrix();
-		
-		
-		
-		
-		
-		// here is some code to draw a fancy axis
-		final FancyAxis fa = new FancyAxis();
-		fa.draw(gl);
-				
-		// Here is some code to draw a red wire cube of size 2
-		gl.glDisable( GL2.GL_LIGHTING );
-		gl.glColor3f(1,0,0);
-        final GLUT glut = new GLUT();
-		glut.glutWireCube(2);
-		gl.glEnable( GL2.GL_LIGHTING );
-	
-		
+
+
+        // here is some code to draw a fancy axis
+        final FancyAxis fa = new FancyAxis();
+        dofCam.drawSensorPlane(drawable);
+        fa.draw(gl);
+
+        gl.glPushMatrix();
+
+        {
+            gl.glLoadIdentity();
+            dofCam.setupProjection(drawable, 0);
+            // Here is some code to draw a red wire cube of size 2
+            gl.glDisable(GL2.GL_LIGHTING);
+            gl.glColor3f(1, 0, 0);
+            final GLUT glut = new GLUT();
+            glut.glutWireCube(2);
+            gl.glEnable(GL2.GL_LIGHTING);
+        }
+		gl.glPopMatrix();
 		
 		
 		gl.glColor3f(1,1,1);

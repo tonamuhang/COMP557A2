@@ -17,6 +17,8 @@ import mintools.parameters.Parameter;
 import mintools.parameters.ParameterListener;
 import mintools.swing.VerticalFlowPanel;
 
+import java.util.DuplicateFormatFlagsException;
+
 /**
  * Depth of field (DOF) Dolly camera parameters
  * 
@@ -133,6 +135,8 @@ public class DOFCamera {
 				eyeDesired.sub( lookAtDesired, viewDir );
 			}
 		});
+
+
     	focalLength.addParameterListener( new ParameterListener<Double>() {
     		@Override
     		public void parameterChanged(Parameter<Double> parameter) {
@@ -177,7 +181,7 @@ public class DOFCamera {
     	double znear = this.near.getValue();
     	double zfar = this.far.getValue();
     	double fov = this.fovy.getValue();
-    	double top = znear * Math.tan(0.5 * fov / 180 * Math.PI);
+    	double top = this.focusDesired.getFloatValue() * Math.tan(0.5 * fov / 180 * Math.PI);
     	double btm = -top;
     	double height = drawable.getSurfaceHeight();
     	double width = drawable.getSurfaceWidth();
@@ -200,10 +204,20 @@ public class DOFCamera {
      */
     public void setupViewingTransformation( GLAutoDrawable drawable, int i ) {
     	GL2 gl = drawable.getGL().getGL2();
-		GLU glu = new GLU();
+		GLU glu = GLU.createGLU(gl);
 
     	// TODO OBJECTIVE 1: Set up the viewing transformation
-		
+		double eyex, eyey, eyez, centerx, centery, centerz, upx, upy, upz;
+
+		eyex = this.eye.x;
+		eyey = this.eye.y;
+		eyez = this.eye.z;
+		upx = this.lookAt.x;
+		upy = this.lookAt.y;
+		upz = this.lookAt.z;
+
+
+		glu.gluLookAt(eyex, eyey, eyez, 0, 0, -5, upx, upy, upz);
 
     	// TODO OBJECTIVE 7: revisit this function for shifted perspective projection, if necessary
 
@@ -227,17 +241,33 @@ public class DOFCamera {
      * Draws the sensor plane 
      * (expects to be drawing in coordinates of the camera view frame) 
      */
-    public void drawSensorPlane( GLAutoDrawable drawable ) {
-	   
+		public void drawSensorPlane( GLAutoDrawable drawable ) {
+
     	// TODO OBJECTIVE 2: Draw the sensor plane rectangle
-    	
-    	
+		double znear = this.near.getValue();
+		double zfar = this.far.getValue();
+		double fov = this.fovy.getValue();
+		double top = this.focusDesired.getFloatValue() * Math.tan(0.5 * fov / 180 * Math.PI);
+		double btm = -top;
+		double height = drawable.getSurfaceHeight();
+		double width = drawable.getSurfaceWidth();
+		double aspect = width / height;
+		double left = btm * aspect;
+		double right = -left;
+
 	    GL2 gl = drawable.getGL().getGL2();
-	    gl.glColor3f(0,1,0); 
+	    gl.glColor3f(0,1,0);
     	gl.glPushMatrix();
     	gl.glDisable( GL2.GL_LIGHTING );
 	    gl.glBegin( GL2.GL_LINE_LOOP );
 	    // use gl.glVertex3d calls to specify the 4 corners of the rectangle
+		{
+			gl.glVertex3d(left, top, this.focusDesired.getFloatValue());
+			gl.glVertex3d(right, top,this.focusDesired.getFloatValue());
+			gl.glVertex3d(right, btm,this.focusDesired.getFloatValue());
+			gl.glVertex3d(left, btm, this.focusDesired.getFloatValue());
+		}
+
 	    gl.glEnd();
 	    gl.glPopMatrix();
     }
