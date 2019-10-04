@@ -1,3 +1,9 @@
 
 *.class
 *.xml
+*.iml
+*.xml
+*.xml
+*.xml
+*.md
+out/production/COMP557A2/.gitattributes
