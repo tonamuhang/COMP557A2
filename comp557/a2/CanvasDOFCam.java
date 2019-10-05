@@ -157,15 +157,16 @@ public class CanvasDOFCam implements GLEventListener, Interactor {
         	drawAccumulated(drawable);
         }
 
-		final FancyAxis fa = new FancyAxis();
-		fa.draw(gl);
 
-		// Here is some code to draw a red wire cube of size 2
-		gl.glDisable( GL2.GL_LIGHTING );
-		gl.glColor3f(1,0,0);
-		final GLUT glut = new GLUT();
-		glut.glutWireCube(2);
-		gl.glEnable( GL2.GL_LIGHTING );
+//		final FancyAxis fa = new FancyAxis();
+//		fa.draw(gl);
+
+//		// Here is some code to draw a red wire cube of size 2
+//		gl.glDisable( GL2.GL_LIGHTING );
+//		gl.glColor3f(1,0,0);
+//		final GLUT glut = new GLUT();
+//		glut.glutWireCube(2);
+//		gl.glEnable( GL2.GL_LIGHTING );
 
         EasyViewer.beginOverlay(drawable);
         EasyViewer.printTextLines( drawable, "DOF Camera", 10, 20, 12, GLUT.BITMAP_HELVETICA_18 );

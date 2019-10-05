@@ -181,7 +181,7 @@ public class DOFCamera {
     	double znear = this.near.getValue();
     	double zfar = this.far.getValue();
     	double fov = this.fovy.getValue();
-    	double top = this.focusDesired.getFloatValue() * Math.tan(0.5 * fov / 180 * Math.PI);
+    	double top = znear * Math.tan(0.5 * fov / 180 * Math.PI);
     	double btm = -top;
     	double height = drawable.getSurfaceHeight();
     	double width = drawable.getSurfaceWidth();
@@ -206,18 +206,28 @@ public class DOFCamera {
     	GL2 gl = drawable.getGL().getGL2();
 		GLU glu = GLU.createGLU(gl);
 
+		double znear = this.near.getValue();
+		double zfar = this.far.getValue();
+		double fov = this.fovy.getValue();
+		double top = znear * Math.tan(0.5 * fov / 180 * Math.PI);
+		double btm = -top;
+		double height = drawable.getSurfaceHeight();
+		double width = drawable.getSurfaceWidth();
+		double aspect = width / height;
+		double left = btm * aspect;
+		double right = -left;
+
     	// TODO OBJECTIVE 1: Set up the viewing transformation
 		double eyex, eyey, eyez, centerx, centery, centerz, upx, upy, upz;
 
-		eyex = this.eye.x;
-		eyey = this.eye.y;
-		eyez = this.eye.z;
+		eyex = this.eyeDesired.x;
+		eyey = this.eyeDesired.y;
+		eyez = this.eyeDesired.z;
 		upx = this.lookAt.x;
 		upy = this.lookAt.y;
 		upz = this.lookAt.z;
 
-
-		glu.gluLookAt(eyex, eyey, eyez, 0, 0, -5, upx, upy, upz);
+		glu.gluLookAt(eyex, eyey, eyez, this.lookAtDesired.x, this.lookAtDesired.y, this.lookAtDesired.z, 0, 1, 0);
 
     	// TODO OBJECTIVE 7: revisit this function for shifted perspective projection, if necessary
 
@@ -232,8 +242,32 @@ public class DOFCamera {
      */
     public void drawFocusPlane( GLAutoDrawable drawable ) {
     	GL2 gl = drawable.getGL().getGL2();
+		double znear = this.near.getValue();
+		double zfar = this.far.getValue();
+		double fov = this.fovy.getValue();
+		double top = this.focusDesired.getFloatValue() * Math.tan(0.5 * fov / 180 * Math.PI);
+		double btm = -top;
+		double height = drawable.getSurfaceHeight();
+		double width = drawable.getSurfaceWidth();
+		double aspect = width / height;
+		double left = btm * aspect;
+		double right = -left;
 
     	// TODO OBJECTIVE 6: Draw the focus plane rectangle
+		gl.glColor3f(0,1,0);
+		gl.glPushMatrix();
+		gl.glDisable( GL2.GL_LIGHTING );
+		gl.glBegin( GL2.GL_LINE_LOOP );
+		// use gl.glVertex3d calls to specify the 4 corners of the rectangle
+		{
+			gl.glVertex3d(left, top, this.focusDesired.getFloatValue());
+			gl.glVertex3d(right, top,this.focusDesired.getFloatValue());
+			gl.glVertex3d(right, btm,this.focusDesired.getFloatValue());
+			gl.glVertex3d(left, btm, this.focusDesired.getFloatValue());
+		}
+
+		gl.glEnd();
+		gl.glPopMatrix();
 
     }
 
