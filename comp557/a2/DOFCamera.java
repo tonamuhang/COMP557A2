@@ -142,12 +142,13 @@ public class DOFCamera {
     		public void parameterChanged(Parameter<Double> parameter) {
     			if ( ignoreParameterChangeCallback ) return;
     			// TODO OBJECTIVE 4: compute fovy, field of view in the y direction
-
     			
-    			double value = 0; // change this!
+    			double value = parameter.getValue(); // change this!
 
     			ignoreParameterChangeCallback = true;
+    			value = Math.atan( sensorHeight.getValue() / 2 / value) / Math.PI * 180;
     			fovy.setValue(value);
+
     			ignoreParameterChangeCallback = false;
     		}
 		});
@@ -158,9 +159,10 @@ public class DOFCamera {
     			// TODO OBJECTIVE 4: compute focal length given the field of view in the y direction
     			
     			
-    			double value = 0; // change this!
+    			double value = parameter.getValue(); // change this!
     			
     			ignoreParameterChangeCallback = true;
+    			value = sensorHeight.getValue() / Math.tan(value/2 * Math.PI / 180) ;
     			focalLength.setValue( value );
     			ignoreParameterChangeCallback = false;
     		}
@@ -183,8 +185,10 @@ public class DOFCamera {
     	double fov = this.fovy.getValue();
     	double top = znear * Math.tan(0.5 * fov / 180 * Math.PI);
     	double btm = -top;
+
     	double height = drawable.getSurfaceHeight();
     	double width = drawable.getSurfaceWidth();
+
     	double aspect = width / height;
     	double left = btm * aspect;
     	double right = -left;
@@ -220,9 +224,9 @@ public class DOFCamera {
     	// TODO OBJECTIVE 1: Set up the viewing transformation
 		double eyex, eyey, eyez, centerx, centery, centerz, upx, upy, upz;
 
-		eyex = this.eyeDesired.x;
-		eyey = this.eyeDesired.y;
-		eyez = this.eyeDesired.z;
+		eyex = this.eye.x;
+		eyey = this.eye.y;
+		eyez = this.eye.z;
 		upx = this.lookAt.x;
 		upy = this.lookAt.y;
 		upz = this.lookAt.z;

@@ -117,29 +117,24 @@ public class CanvasCam2 implements GLEventListener {
             V.reconstitute();
             Vinv.getBackingMatrix().invert(V.getBackingMatrix());
 
-
-
-            gl.glPushMatrix();
-            {
-                gl.glMultMatrixd(Pinv.asArray(), 0);
-
-                // Here is some code to draw a red wire cube of size 2
-                gl.glDisable(GL2.GL_LIGHTING);
-                gl.glColor3f(1, 0, 0);
-                glut.glutWireCube(2);
-                gl.glEnable(GL2.GL_LIGHTING);
-            }
-            gl.glPopMatrix();
-
         }
 		gl.glPopMatrix();
 
+        gl.glPushMatrix();
+        {
+            gl.glMultMatrixd(Vinv.asArray(), 0);
+            final FancyAxis fa = new FancyAxis();
+            fa.draw(gl);
+            dofCam.drawSensorPlane(drawable);
+            gl.glMultMatrixd(Pinv.asArray(), 0);
+            // Here is some code to draw a red wire cube of size 2
+            gl.glDisable(GL2.GL_LIGHTING);
+            gl.glColor3f(1, 0, 0);
+            glut.glutWireCube(2);
+            gl.glEnable(GL2.GL_LIGHTING);
+        }
+        gl.glPopMatrix();
 
-        // here is some code to draw a fancy axis
-        final FancyAxis fa = new FancyAxis();
-        fa.draw(gl);
-
-        dofCam.drawSensorPlane(drawable);
 
 		gl.glColor3f(1,1,1);
         EasyViewer.beginOverlay(drawable);
