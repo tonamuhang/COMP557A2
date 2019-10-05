@@ -22,6 +22,9 @@ import mintools.viewer.EasyViewer;
 import mintools.viewer.FancyAxis;
 import mintools.viewer.Interactor;
 
+import javax.vecmath.Point3d;
+import javax.vecmath.Tuple3d;
+
 /**
  * OpenGL drawing canvas with a specific view.
  * 
@@ -139,8 +142,8 @@ public class CanvasDOFCam implements GLEventListener, Interactor {
         		
         		// TODO OBJECTIVE 5: Set the desired focus distance based on the selected point in the world
 
-        		double val = 0; // change this!
-        		
+        		double val = dofCam.eye.z - selector.selectedPoint.z ;
+
         		dofCam.focusDesired.setValue( val );
         	}
         }

@@ -249,7 +249,7 @@ public class DOFCamera {
 		double znear = this.near.getValue();
 		double zfar = this.far.getValue();
 		double fov = this.fovy.getValue();
-		double top = this.focusDesired.getFloatValue() * Math.tan(0.5 * fov / 180 * Math.PI);
+		double top = this.focusDistance * Math.tan(0.5 * fov / 180 * Math.PI);
 		double btm = -top;
 		double height = drawable.getSurfaceHeight();
 		double width = drawable.getSurfaceWidth();
@@ -258,16 +258,16 @@ public class DOFCamera {
 		double right = -left;
 
     	// TODO OBJECTIVE 6: Draw the focus plane rectangle
-		gl.glColor3f(0,1,0);
+		gl.glColor3f(0,0,1);
 		gl.glPushMatrix();
 		gl.glDisable( GL2.GL_LIGHTING );
 		gl.glBegin( GL2.GL_LINE_LOOP );
 		// use gl.glVertex3d calls to specify the 4 corners of the rectangle
 		{
-			gl.glVertex3d(left, top, this.focusDesired.getFloatValue());
-			gl.glVertex3d(right, top,this.focusDesired.getFloatValue());
-			gl.glVertex3d(right, btm,this.focusDesired.getFloatValue());
-			gl.glVertex3d(left, btm, this.focusDesired.getFloatValue());
+			gl.glVertex3d(left, top, -this.focusDistance);
+			gl.glVertex3d(right, top,-this.focusDistance);
+			gl.glVertex3d(right, btm,-this.focusDistance);
+			gl.glVertex3d(left, btm, -this.focusDistance);
 		}
 
 		gl.glEnd();
@@ -285,7 +285,7 @@ public class DOFCamera {
 		double znear = this.near.getValue();
 		double zfar = this.far.getValue();
 		double fov = this.fovy.getValue();
-		double top = this.focusDesired.getFloatValue() * Math.tan(0.5 * fov / 180 * Math.PI);
+		double top = this.sensorHeight.getFloatValue()/2;
 		double btm = -top;
 		double height = drawable.getSurfaceHeight();
 		double width = drawable.getSurfaceWidth();
@@ -295,17 +295,13 @@ public class DOFCamera {
 
 	    GL2 gl = drawable.getGL().getGL2();
 	    gl.glColor3f(0,1,0);
-    	gl.glPushMatrix();
-    	gl.glDisable( GL2.GL_LIGHTING );
+	    gl.glPushMatrix();
+	    gl.glDisable( GL2.GL_LIGHTING );
 	    gl.glBegin( GL2.GL_LINE_LOOP );
-	    // use gl.glVertex3d calls to specify the 4 corners of the rectangle
-		{
-			gl.glVertex3d(left, top, this.focusDesired.getFloatValue());
-			gl.glVertex3d(right, top,this.focusDesired.getFloatValue());
-			gl.glVertex3d(right, btm,this.focusDesired.getFloatValue());
-			gl.glVertex3d(left, btm, this.focusDesired.getFloatValue());
-		}
-
+	    gl.glVertex3d(left, top, this.focalLength.getValue());
+	    gl.glVertex3d(right, top,this.focalLength.getValue());
+	    gl.glVertex3d(right, btm,this.focalLength.getValue());
+	    gl.glVertex3d(left, btm, this.focalLength.getValue());
 	    gl.glEnd();
 	    gl.glPopMatrix();
     }

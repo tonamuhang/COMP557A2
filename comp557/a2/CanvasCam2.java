@@ -126,6 +126,7 @@ public class CanvasCam2 implements GLEventListener {
             final FancyAxis fa = new FancyAxis();
             fa.draw(gl);
             dofCam.drawSensorPlane(drawable);
+            dofCam.drawFocusPlane(drawable);
             gl.glMultMatrixd(Pinv.asArray(), 0);
             // Here is some code to draw a red wire cube of size 2
             gl.glDisable(GL2.GL_LIGHTING);
