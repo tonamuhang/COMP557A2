@@ -22,6 +22,7 @@ import mintools.viewer.EasyViewer;
 import mintools.viewer.FancyAxis;
 import mintools.viewer.Interactor;
 
+import javax.vecmath.Point2d;
 import javax.vecmath.Point3d;
 import javax.vecmath.Tuple3d;
 
@@ -160,17 +161,6 @@ public class CanvasDOFCam implements GLEventListener, Interactor {
         	drawAccumulated(drawable);
         }
 
-
-//		final FancyAxis fa = new FancyAxis();
-//		fa.draw(gl);
-
-//		// Here is some code to draw a red wire cube of size 2
-//		gl.glDisable( GL2.GL_LIGHTING );
-//		gl.glColor3f(1,0,0);
-//		final GLUT glut = new GLUT();
-//		glut.glutWireCube(2);
-//		gl.glEnable( GL2.GL_LIGHTING );
-
         EasyViewer.beginOverlay(drawable);
         EasyViewer.printTextLines( drawable, "DOF Camera", 10, 20, 12, GLUT.BITMAP_HELVETICA_18 );
         gl.glEnable( GL2.GL_LIGHTING );
@@ -186,37 +176,40 @@ public class CanvasDOFCam implements GLEventListener, Interactor {
         
         //gl.glAccum( GL2.GL_LOAD, 0f );  
         accum.glAccumLoadZero(drawable);  // glAccum equivalent
-        
+
+
         int N = dofCam.samples.getValue();
         for ( int i = 0; i < N; i++ ) {
-    	    
-        	// TODO OBJECTIVE 7: See how different projections are averaged together for your DOF view in this method
+
+
+			// TODO OBJECTIVE 7: See how different projections are averaged together for your DOF view in this method
         	gl.glMatrixMode( GL2.GL_PROJECTION );
     	    gl.glLoadIdentity();
     	    dofCam.setupProjection( drawable, i );
-
-
 
     	    gl.glMatrixMode( GL2.GL_MODELVIEW );
     	    gl.glLoadIdentity();
     	    dofCam.setupViewingTransformation( drawable, i );
 
-
-
     	    gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
     	    scene.display( drawable, list );
 
+    	    if(i == 0){
+    	    	gl.glAccum(GL2.GL_LOAD, 1f/N);
+			}
+    	    else{
+    	    	gl.glAccum(GL2.GL_ACCUM, 1f/N);
+			}
 
-            //gl.glAccum( GL2.GL_ACCUM, 1.0f/N );  
-            accum.glAccum( drawable, 1.0f/N ); // glAccum GL_ACCUM equivalent
+    	    //gl.glAccum( GL2.GL_ACCUM, 1.0f/N );
+			// accum.glAccum( drawable, 1.0f/N ); // glAccum GL_ACCUM equivalent
+
+
         }
 
-		// Here is some code to draw a red wire cube of size 2
-		// here is some code to draw a fancy axis
-
-
-        //gl.glAccum( GL2.GL_RETURN, 1 );   
+        //gl.glAccum( GL2.GL_RETURN, 1 );
         accum.glAccumReturn(drawable);  // glAccum GL_RETURN equivalent
+
     }
     
     @Override

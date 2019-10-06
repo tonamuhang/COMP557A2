@@ -92,7 +92,7 @@ public class DOFCamera {
     	
 		if ( dollyFocus.getValue() ) {
 	    	// TODO OBJECTIVE 8: Set the focusDistance based on the dolly
-
+//			this.focusDistance = dolly.getValue();
 
 		}
 		
@@ -100,7 +100,8 @@ public class DOFCamera {
 			// TODO OBJECTIVE 8: Set the focal length based on the dolly
 			// Hint: store the size (e.g., height) of the focus plane rectangle
 			// and make sure it stays constant with respect to the other parameters
-
+//			double fpHeight =  this.focusDistance * Math.tan(this.fovy.getFloatValue() / 180 * Math.PI);
+//			focalLength.setValue(this.focusDistance * this.sensorHeight.getValue() / fpHeight);
 		}
     }
 	
@@ -193,10 +194,36 @@ public class DOFCamera {
     	double left = btm * aspect;
     	double right = -left;
 
-    	gl.glFrustum(left, right, btm, top, znear, zfar);
+
+
+
 
     	// TODO OBJECTIVE 7: revisit this function for shifted perspective projection
-    	
+
+		if(this.drawWithBlur.getValue()) {
+
+			Point2d p = new Point2d();
+			int n = samples.getValue();
+			fpd.get(p, i, n);
+			p.scale(this.getEffectivePupilRadius());
+
+			double ratio = znear / focusDistance;
+			double f_top = this.focusDistance * Math.tan(0.5 * fov / 180 * Math.PI);
+			double f_btm = -top;
+			double f_left = btm * aspect;
+			double f_right = -left;
+
+			top = ratio * (f_top - p.y);
+			btm = ratio * (f_btm - p.y);
+			left = ratio * (f_left - p.x);
+			right = ratio * (f_right - p.x);
+
+			gl.glFrustum(left, right, btm, top, znear, zfar);
+
+		}
+		else{
+			gl.glFrustum(left, right, btm, top, znear, zfar);
+		}
     }
     
     
@@ -231,10 +258,24 @@ public class DOFCamera {
 		upy = this.lookAt.y;
 		upz = this.lookAt.z;
 
-		glu.gluLookAt(eyex, eyey, eyez, this.lookAtDesired.x, this.lookAtDesired.y, this.lookAtDesired.z, 0, 1, 0);
+
+
+
 
     	// TODO OBJECTIVE 7: revisit this function for shifted perspective projection, if necessary
 
+		if(this.drawWithBlur.getValue()) {
+
+			Point2d p = new Point2d();
+			int n = samples.getValue();
+			fpd.get(p, i, n);
+			p.scale(this.getEffectivePupilRadius());
+			glu.gluLookAt(eyex + p.x, eyey + p.y, eyez, this.lookAt.x + p.x, this.lookAt.y + p.y, -focusDistance, 0, 1, 0);
+
+		}
+		else{
+			glu.gluLookAt(eyex, eyey, eyez, this.lookAt.x, this.lookAt.y, this.lookAt.z, 0, 1, 0);
+		}
     }
     
     /**
@@ -246,8 +287,6 @@ public class DOFCamera {
      */
     public void drawFocusPlane( GLAutoDrawable drawable ) {
     	GL2 gl = drawable.getGL().getGL2();
-		double znear = this.near.getValue();
-		double zfar = this.far.getValue();
 		double fov = this.fovy.getValue();
 		double top = this.focusDistance * Math.tan(0.5 * fov / 180 * Math.PI);
 		double btm = -top;
