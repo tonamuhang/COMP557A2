@@ -92,7 +92,7 @@ public class DOFCamera {
     	
 		if ( dollyFocus.getValue() ) {
 	    	// TODO OBJECTIVE 8: Set the focusDistance based on the dolly
-//			this.focusDistance = dolly.getValue();
+			this.focusDistance = alpha * dolly.getValue() + (1-alpha) * focusDesired.getValue();
 
 		}
 		
@@ -102,6 +102,11 @@ public class DOFCamera {
 			// and make sure it stays constant with respect to the other parameters
 //			double fpHeight =  this.focusDistance * Math.tan(this.fovy.getFloatValue() / 180 * Math.PI);
 //			focalLength.setValue(this.focusDistance * this.sensorHeight.getValue() / fpHeight);
+
+			double fov = Math.toRadians(this.fovy.getValue() / 2);
+			double focalplaneH = this.focalLength.getFloatValue() * Math.tan(fov);
+			focalLength.setValue(this.focalLength.getValue() * this.sensorHeight.getValue() / focalplaneH);
+
 		}
     }
 	
@@ -193,7 +198,12 @@ public class DOFCamera {
     	double aspect = width / height;
     	double left = btm * aspect;
     	double right = -left;
+		double eyex, eyey, eyez, centerx, centery, centerz, upx, upy, upz;
 
+		eyex = this.eye.x;
+		eyey = this.eye.y;
+		eyez = this.eye.z;
+		double r = (eyex - znear)/(eyez - focusDistance);
 
     	// TODO OBJECTIVE 7: revisit this function for shifted perspective projection
 		gl.glFrustum(left, right, btm, top, znear, zfar);
@@ -201,7 +211,6 @@ public class DOFCamera {
 		if(this.drawWithBlur.getValue()){
 			final Point2d p = new Point2d();
 			double s = getEffectivePupilRadius();
-
 			fpd.get( p, i, samples.getValue() );
 			double ox = s * p.x; // eye offset from center + effective aperture displacement
 			double oy = s * p.y;
@@ -242,9 +251,7 @@ public class DOFCamera {
 		eyex = this.eye.x;
 		eyey = this.eye.y;
 		eyez = this.eye.z;
-		upx = this.lookAt.x;
-		upy = this.lookAt.y;
-		upz = this.lookAt.z;
+		double r = (eyex - znear)/(eyez - focusDistance);
 
     	// TODO OBJECTIVE 7: revisit this function for shifted perspective projection, if necessary
 		glu.gluLookAt(eyex, eyey, eyez, this.lookAt.x, this.lookAt.y, this.lookAt.z, 0, 1, 0);
@@ -294,10 +301,10 @@ public class DOFCamera {
 		gl.glBegin( GL2.GL_LINE_LOOP );
 		// use gl.glVertex3d calls to specify the 4 corners of the rectangle
 		{
-			gl.glVertex3d(left, top, -this.focusDistance + znear);
-			gl.glVertex3d(right, top,-this.focusDistance + znear);
-			gl.glVertex3d(right, btm,-this.focusDistance + znear);
-			gl.glVertex3d(left, btm, -this.focusDistance + znear);
+			gl.glVertex3d(left, top, -this.focusDistance);
+			gl.glVertex3d(right, top,-this.focusDistance);
+			gl.glVertex3d(right, btm,-this.focusDistance);
+			gl.glVertex3d(left, btm, -this.focusDistance);
 		}
 
 		gl.glEnd();

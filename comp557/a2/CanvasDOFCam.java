@@ -174,7 +174,7 @@ public class CanvasDOFCam implements GLEventListener, Interactor {
     private void drawAccumulated( GLAutoDrawable drawable ) {
         GL2 gl = drawable.getGL().getGL2();
         
-        //gl.glAccum( GL2.GL_LOAD, 0f );
+        gl.glAccum( GL2.GL_LOAD, 0f );
 //        accum.glAccumLoadZero(drawable);  // glAccum equivalent
 
         int N = dofCam.samples.getValue();
