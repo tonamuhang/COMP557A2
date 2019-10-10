@@ -195,35 +195,23 @@ public class DOFCamera {
     	double right = -left;
 
 
-
-
-
     	// TODO OBJECTIVE 7: revisit this function for shifted perspective projection
+		gl.glFrustum(left, right, btm, top, znear, zfar);
 
-		if(this.drawWithBlur.getValue()) {
+		if(this.drawWithBlur.getValue()){
+			final Point2d p = new Point2d();
+			double s = getEffectivePupilRadius();
 
-			Point2d p = new Point2d();
-			int n = samples.getValue();
-			fpd.get(p, i, n);
-			p.scale(this.getEffectivePupilRadius());
+			fpd.get( p, i, samples.getValue() );
+			double ox = s * p.x; // eye offset from center + effective aperture displacement
+			double oy = s * p.y;
 
-			double ratio = znear / focusDistance;
-			double f_top = this.focusDistance * Math.tan(0.5 * fov / 180 * Math.PI);
-			double f_btm = -top;
-			double f_left = btm * aspect;
-			double f_right = -left;
-
-			top = ratio * (f_top - p.y);
-			btm = ratio * (f_btm - p.y);
-			left = ratio * (f_left - p.x);
-			right = ratio * (f_right - p.x);
-
-			gl.glFrustum(left, right, btm, top, znear, zfar);
-
+			gl.glTranslated(ox, oy, 0);
 		}
-		else{
-			gl.glFrustum(left, right, btm, top, znear, zfar);
-		}
+
+
+
+
     }
     
     
@@ -258,24 +246,26 @@ public class DOFCamera {
 		upy = this.lookAt.y;
 		upz = this.lookAt.z;
 
-
-
-
-
     	// TODO OBJECTIVE 7: revisit this function for shifted perspective projection, if necessary
+		glu.gluLookAt(eyex, eyey, eyez, this.lookAt.x, this.lookAt.y, this.lookAt.z, 0, 1, 0);
 
-		if(this.drawWithBlur.getValue()) {
+		if(this.drawWithBlur.getValue()){
+			final Point2d p = new Point2d();
+			double s = getEffectivePupilRadius();
 
-			Point2d p = new Point2d();
-			int n = samples.getValue();
-			fpd.get(p, i, n);
-			p.scale(this.getEffectivePupilRadius());
-			glu.gluLookAt(eyex + p.x, eyey + p.y, eyez, this.lookAt.x + p.x, this.lookAt.y + p.y, -focusDistance, 0, 1, 0);
+			fpd.get( p, i, samples.getValue() );
+			double ox = s * p.x; // eye offset from center + effective aperture displacement
+			double oy = s * p.y;
 
+//			glu.gluLookAt(eyex + ox, eyey + oy, eyez, this.lookAt.x, this.lookAt.y, this.lookAt.z, 0, 1, 0);
+
+
+			gl.glTranslated(ox, oy, 0);
 		}
-		else{
-			glu.gluLookAt(eyex, eyey, eyez, this.lookAt.x, this.lookAt.y, this.lookAt.z, 0, 1, 0);
-		}
+
+
+
+
     }
     
     /**
@@ -287,6 +277,7 @@ public class DOFCamera {
      */
     public void drawFocusPlane( GLAutoDrawable drawable ) {
     	GL2 gl = drawable.getGL().getGL2();
+    	double znear = this.near.getValue();
 		double fov = this.fovy.getValue();
 		double top = this.focusDistance * Math.tan(0.5 * fov / 180 * Math.PI);
 		double btm = -top;
@@ -303,10 +294,10 @@ public class DOFCamera {
 		gl.glBegin( GL2.GL_LINE_LOOP );
 		// use gl.glVertex3d calls to specify the 4 corners of the rectangle
 		{
-			gl.glVertex3d(left, top, -this.focusDistance);
-			gl.glVertex3d(right, top,-this.focusDistance);
-			gl.glVertex3d(right, btm,-this.focusDistance);
-			gl.glVertex3d(left, btm, -this.focusDistance);
+			gl.glVertex3d(left, top, -this.focusDistance + znear);
+			gl.glVertex3d(right, top,-this.focusDistance + znear);
+			gl.glVertex3d(right, btm,-this.focusDistance + znear);
+			gl.glVertex3d(left, btm, -this.focusDistance + znear);
 		}
 
 		gl.glEnd();
@@ -374,7 +365,7 @@ public class DOFCamera {
      * @return
      */
     private double getEffectivePupilRadius() {
-	    double fl = focalLength.getValue() / 1000;
+	    double fl = focalLength.getValue();
 	    double fd = -focusDistance; 
 	    double f = 1/(1/fd+1/fl);
 	    double r = f / fstop.getValue() / 2; // divide by 2 to get radius of effective aperture 

@@ -174,14 +174,11 @@ public class CanvasDOFCam implements GLEventListener, Interactor {
     private void drawAccumulated( GLAutoDrawable drawable ) {
         GL2 gl = drawable.getGL().getGL2();
         
-        //gl.glAccum( GL2.GL_LOAD, 0f );  
-        accum.glAccumLoadZero(drawable);  // glAccum equivalent
-
+        //gl.glAccum( GL2.GL_LOAD, 0f );
+//        accum.glAccumLoadZero(drawable);  // glAccum equivalent
 
         int N = dofCam.samples.getValue();
         for ( int i = 0; i < N; i++ ) {
-
-
 			// TODO OBJECTIVE 7: See how different projections are averaged together for your DOF view in this method
         	gl.glMatrixMode( GL2.GL_PROJECTION );
     	    gl.glLoadIdentity();
@@ -192,23 +189,23 @@ public class CanvasDOFCam implements GLEventListener, Interactor {
     	    dofCam.setupViewingTransformation( drawable, i );
 
     	    gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
-    	    scene.display( drawable, list );
 
-    	    if(i == 0){
-    	    	gl.glAccum(GL2.GL_LOAD, 1f/N);
+			scene.display( drawable, list );
+
+			if(i == 0){
+				gl.glAccum( GL2.GL_LOAD, 1.0f/N);
 			}
-    	    else{
-    	    	gl.glAccum(GL2.GL_ACCUM, 1f/N);
+			else {
+				gl.glAccum( GL2.GL_ACCUM, 1.0f/N );
+//				accum.glAccum(drawable, 1.0f / N); // glAccum GL_ACCUM equivalent
 			}
 
-    	    //gl.glAccum( GL2.GL_ACCUM, 1.0f/N );
-			// accum.glAccum( drawable, 1.0f/N ); // glAccum GL_ACCUM equivalent
 
 
         }
 
-        //gl.glAccum( GL2.GL_RETURN, 1 );
-        accum.glAccumReturn(drawable);  // glAccum GL_RETURN equivalent
+        gl.glAccum( GL2.GL_RETURN, 1 );
+//        accum.glAccumReturn(drawable);  // glAccum GL_RETURN equivalent
 
     }
     
