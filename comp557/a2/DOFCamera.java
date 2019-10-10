@@ -200,9 +200,9 @@ public class DOFCamera {
     	double right = -left;
 		double eyex, eyey, eyez, centerx, centery, centerz, upx, upy, upz;
 
-		eyex = this.eye.x;
-		eyey = this.eye.y;
-		eyez = this.eye.z;
+		eyex = this.eyeDesired.x;
+		eyey = this.eyeDesired.y;
+		eyez = this.eyeDesired.z;
 		double r = (eyex - znear)/(eyez - focusDistance);
 
     	// TODO OBJECTIVE 7: revisit this function for shifted perspective projection
@@ -212,10 +212,11 @@ public class DOFCamera {
 			final Point2d p = new Point2d();
 			double s = getEffectivePupilRadius();
 			fpd.get( p, i, samples.getValue() );
+
 			double ox = s * p.x; // eye offset from center + effective aperture displacement
 			double oy = s * p.y;
 
-			gl.glTranslated(ox, oy, 0);
+			gl.glTranslated(r * ox, r * oy, 0);
 		}
 
 
@@ -248,13 +249,13 @@ public class DOFCamera {
     	// TODO OBJECTIVE 1: Set up the viewing transformation
 		double eyex, eyey, eyez, centerx, centery, centerz, upx, upy, upz;
 
-		eyex = this.eye.x;
-		eyey = this.eye.y;
-		eyez = this.eye.z;
+		eyex = this.eyeDesired.x;
+		eyey = this.eyeDesired.y;
+		eyez = this.eyeDesired.z;
 		double r = (eyex - znear)/(eyez - focusDistance);
 
     	// TODO OBJECTIVE 7: revisit this function for shifted perspective projection, if necessary
-		glu.gluLookAt(eyex, eyey, eyez, this.lookAt.x, this.lookAt.y, this.lookAt.z, 0, 1, 0);
+		glu.gluLookAt(eyex, eyey, eyez, this.lookAtDesired.x, this.lookAtDesired.y, this.lookAtDesired.z, 0, 1, 0);
 
 		if(this.drawWithBlur.getValue()){
 			final Point2d p = new Point2d();
@@ -267,7 +268,7 @@ public class DOFCamera {
 //			glu.gluLookAt(eyex + ox, eyey + oy, eyez, this.lookAt.x, this.lookAt.y, this.lookAt.z, 0, 1, 0);
 
 
-			gl.glTranslated(ox, oy, 0);
+			gl.glTranslated(r * ox, r * oy, 0);
 		}
 
 
@@ -372,7 +373,7 @@ public class DOFCamera {
      * @return
      */
     private double getEffectivePupilRadius() {
-	    double fl = focalLength.getValue();
+	    double fl = focalLength.getValue()/1000;
 	    double fd = -focusDistance; 
 	    double f = 1/(1/fd+1/fl);
 	    double r = f / fstop.getValue() / 2; // divide by 2 to get radius of effective aperture 
