@@ -92,7 +92,12 @@ public class DOFCamera {
     	
 		if ( dollyFocus.getValue() ) {
 	    	// TODO OBJECTIVE 8: Set the focusDistance based on the dolly
-			this.focusDistance = alpha * dolly.getValue() + (1-alpha) * focusDesired.getValue();
+//			this.focusDesired.setValue(alpha * dolly.getValue() + (1-alpha) * focusDesired.getValue());
+			v.scale(1-alpha, this.focusPoint);
+			this.focusPoint.scale(alpha);
+			this.focusPoint.add(v);
+
+			this.focusDistance = this.focusPoint.distance(this.eye);
 
 		}
 		
@@ -105,7 +110,7 @@ public class DOFCamera {
 
 			double fov = Math.toRadians(this.fovy.getValue() / 2);
 			double focalplaneH = this.focalLength.getFloatValue() * Math.tan(fov);
-			focalLength.setValue(this.focalLength.getValue() * this.sensorHeight.getValue() / focalplaneH);
+			this.near.setValue(this.focalLength.getValue() * this.sensorHeight.getValue() / focalplaneH);
 
 		}
     }
@@ -198,11 +203,7 @@ public class DOFCamera {
     	double aspect = width / height;
     	double left = btm * aspect;
     	double right = -left;
-		double eyex, eyey, eyez, centerx, centery, centerz, upx, upy, upz;
 
-		eyex = this.eyeDesired.x;
-		eyey = this.eyeDesired.y;
-		eyez = this.eyeDesired.z;
 		double r = (znear)/(-this.focusDesired.getValue());
 
     	// TODO OBJECTIVE 7: revisit this function for shifted perspective projection
@@ -216,7 +217,7 @@ public class DOFCamera {
 			double ox = s * p.x; // eye offset from center + effective aperture displacement
 			double oy = s * p.y;
 
-			gl.glTranslated(-r * ox, -r * oy, 0);
+			gl.glTranslated(-r * ox, -r* oy, 0);
 		}
 
 
@@ -255,7 +256,7 @@ public class DOFCamera {
 		double r = (znear)/(-this.focusDesired.getValue());
 
     	// TODO OBJECTIVE 7: revisit this function for shifted perspective projection, if necessary
-		glu.gluLookAt(eyex, eyey, eyez, this.lookAtDesired.x, this.lookAtDesired.y, this.lookAtDesired.z, 0, 1, 0);
+		glu.gluLookAt(eyex, eyey, eyez, this.focusPoint.x, this.focusPoint.y, this.focusPoint.z, 0, 1, 0);
 
 		if(this.drawWithBlur.getValue()){
 			final Point2d p = new Point2d();
