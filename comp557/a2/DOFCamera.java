@@ -203,7 +203,7 @@ public class DOFCamera {
 		eyex = this.eyeDesired.x;
 		eyey = this.eyeDesired.y;
 		eyez = this.eyeDesired.z;
-		double r = (eyex - znear)/(eyez - focusDistance);
+		double r = (znear)/(-this.focusDesired.getValue());
 
     	// TODO OBJECTIVE 7: revisit this function for shifted perspective projection
 		gl.glFrustum(left, right, btm, top, znear, zfar);
@@ -216,7 +216,7 @@ public class DOFCamera {
 			double ox = s * p.x; // eye offset from center + effective aperture displacement
 			double oy = s * p.y;
 
-			gl.glTranslated(r * ox, r * oy, 0);
+			gl.glTranslated(-r * ox, -r * oy, 0);
 		}
 
 
@@ -252,7 +252,7 @@ public class DOFCamera {
 		eyex = this.eyeDesired.x;
 		eyey = this.eyeDesired.y;
 		eyez = this.eyeDesired.z;
-		double r = (eyex - znear)/(eyez - focusDistance);
+		double r = (znear)/(-this.focusDesired.getValue());
 
     	// TODO OBJECTIVE 7: revisit this function for shifted perspective projection, if necessary
 		glu.gluLookAt(eyex, eyey, eyez, this.lookAtDesired.x, this.lookAtDesired.y, this.lookAtDesired.z, 0, 1, 0);
@@ -267,8 +267,7 @@ public class DOFCamera {
 
 //			glu.gluLookAt(eyex + ox, eyey + oy, eyez, this.lookAt.x, this.lookAt.y, this.lookAt.z, 0, 1, 0);
 
-
-			gl.glTranslated(r * ox, r * oy, 0);
+			gl.glTranslated(-ox, -oy, 0);
 		}
 
 
