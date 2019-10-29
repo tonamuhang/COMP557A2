@@ -26,7 +26,7 @@ import javax.vecmath.Point2d;
 import javax.vecmath.Point3d;
 import javax.vecmath.Tuple3d;
 
-/**
+/**MuhangLi 260736135
  * OpenGL drawing canvas with a specific view.
  * 
  * @author kry

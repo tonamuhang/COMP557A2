@@ -19,14 +19,14 @@ import mintools.swing.VerticalFlowPanel;
 
 import java.util.DuplicateFormatFlagsException;
 
-/**
+/**MuhangLi 260736135
  * Depth of field (DOF) Dolly camera parameters
  * 
  * Note that many of these parameters have limits that help avoid bad settings
  * but not everything will necessarily work perfectly in some settings.  For 
  * instance, nothing is preventing you from setting your near plane past your 
  * far plane!  There will be other bad settings in this assignment too.
- * 
+ *
  * @author kry
  */
 public class DOFCamera {
@@ -93,11 +93,11 @@ public class DOFCamera {
 		if ( dollyFocus.getValue() ) {
 	    	// TODO OBJECTIVE 8: Set the focusDistance based on the dolly
 //			this.focusDesired.setValue(alpha * dolly.getValue() + (1-alpha) * focusDesired.getValue());
-			v.scale(1-alpha, this.focusPoint);
-			this.focusPoint.scale(alpha);
-			this.focusPoint.add(v);
-
-			this.focusDistance = this.focusPoint.distance(this.eye);
+			focusDistance = focusPoint.distance(eye);
+//			v.scale(1-alpha, this.focusPoint);
+//			this.focusPoint.scale(alpha);
+//			this.focusPoint.add(v);
+//			this.focusDistance = this.focusPoint.distance(this.eye);
 
 		}
 		
@@ -105,12 +105,10 @@ public class DOFCamera {
 			// TODO OBJECTIVE 8: Set the focal length based on the dolly
 			// Hint: store the size (e.g., height) of the focus plane rectangle
 			// and make sure it stays constant with respect to the other parameters
-//			double fpHeight =  this.focusDistance * Math.tan(this.fovy.getFloatValue() / 180 * Math.PI);
-//			focalLength.setValue(this.focusDistance * this.sensorHeight.getValue() / fpHeight);
 
 			double fov = Math.toRadians(this.fovy.getValue() / 2);
 			double focalplaneH = this.focalLength.getFloatValue() * Math.tan(fov);
-			this.near.setValue(this.focalLength.getValue() * this.sensorHeight.getValue() / focalplaneH);
+			focalLength.setValue(this.focusDistance * this.sensorHeight.getValue() / focalplaneH);
 
 		}
     }
@@ -204,7 +202,7 @@ public class DOFCamera {
     	double left = btm * aspect;
     	double right = -left;
 
-		double r = (znear)/(-this.focusDesired.getValue());
+		double r = (znear)/(-this.focusDistance);
 
     	// TODO OBJECTIVE 7: revisit this function for shifted perspective projection
 		gl.glFrustum(left, right, btm, top, znear, zfar);
@@ -256,7 +254,8 @@ public class DOFCamera {
 		double r = (znear)/(-this.focusDesired.getValue());
 
     	// TODO OBJECTIVE 7: revisit this function for shifted perspective projection, if necessary
-		glu.gluLookAt(eyex, eyey, eyez, this.focusPoint.x, this.focusPoint.y, this.focusPoint.z, 0, 1, 0);
+		glu.gluLookAt(eyex, eyey, eyez, this.lookAtDesired.x, this.lookAtDesired.y, this.lookAtDesired.z, 0, 1, 0);
+//		glu.gluLookAt(eyex, eyey, eyez, this.focusPoint.x, this.focusPoint.y, this.focusPoint.z, 0, 1, 0);
 
 		if(this.drawWithBlur.getValue()){
 			final Point2d p = new Point2d();

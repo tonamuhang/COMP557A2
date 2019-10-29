@@ -16,7 +16,7 @@ import mintools.viewer.FancyAxis;
 import mintools.viewer.FlatMatrix4d;
 import mintools.viewer.TrackBallCamera;
 
-/**
+/**MuhangLi 260736135
  * OpenGL drawing canvas with a 2nd camera view of the world and a primary camera.
  * This canvas uses its own camera, a trackball camera implemented by the mintools jar.
  * @author kry
